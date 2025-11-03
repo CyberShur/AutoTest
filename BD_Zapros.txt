@@ -1,0 +1,67 @@
+Практическая часть. Работа с базой данных
+
+Задание 1. Проверка заказов в статусе «В доставке»
+Представь: тебе нужно проверить, отображается ли созданный заказ в базе данных.
+Для этого: выведи список логинов курьеров с количеством их заказов в статусе «В доставке» (поле inDelivery = true). 
+
+SQL-запрос
+
+Описание:
+  Таблицы:
+    - "Couriers" (id, login, ...)
+    - "Orders"   (id, "courierId", "inDelivery", ...)
+
+Логика:
+  1) Соединяем таблицу курьеров и заказы по "courierId".
+  2) Считаем только те заказы, у которых "inDelivery" = TRUE.
+  3) Используем LEFT JOIN, чтобы показать всех курьеров (у кого нет заказов — 0).
+  4) Группируем по логину и сортируем по количеству заказов.
+
+
+SELECT 
+  c.login AS courier_login,
+  COUNT(o.id) AS in_delivery_orders
+FROM "Couriers" AS c
+LEFT JOIN "Orders" AS o 
+  ON c.id = o."courierId"
+ AND o."inDelivery" = TRUE
+GROUP BY c.login
+ORDER BY in_delivery_orders DESC, c.login;
+
+
+Задание 2. Проверка корректности статусов заказов
+Ты тестируешь статусы заказов. Нужно убедиться, что в базе данных они записываются корректно.
+Для этого: выведи все трекеры заказов и их статусы. 
+Статусы определяются по следующему правилу:
+Если поле finished == true, то вывести статус 2.
+Если поле canсelled == true, то вывести статус -1.
+Если поле inDelivery == true, то вывести статус 1.
+Для остальных случаев вывести 0.
+
+SQL-запрос
+
+Описание:
+  Таблица: "Orders"
+  Поля:
+    - track        — трек-номер заказа
+    - finished     — флаг завершённого заказа
+    - cancelled    — флаг отменённого заказа
+    - "inDelivery" — флаг заказа в процессе доставки
+
+Правило определения статуса:
+    finished  = TRUE → статус  2
+    cancelled = TRUE → статус -1
+    inDelivery= TRUE → статус  1
+    иначе             статус  0
+
+
+SELECT
+  track,
+  CASE
+    WHEN finished = TRUE      THEN  2
+    WHEN cancelled = TRUE     THEN -1
+    WHEN "inDelivery" = TRUE  THEN  1
+    ELSE 0
+  END AS status
+FROM "Orders"
+ORDER BY track;

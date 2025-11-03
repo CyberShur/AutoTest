@@ -46,7 +46,7 @@ AutoTest/
 ### Вариант 1. Через `pytest` в терминале (с отображением print)
 
 ```
-python -m pytest -s -q sender_stand_request.py
+python -m pytest -s -q test_sender_stand_request.py
 ```
 
 - Параметр `-s` показывает вывод `print()` прямо в терминале.
